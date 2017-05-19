@@ -30,4 +30,9 @@ public class UserMeal {
     public int getCalories() {
         return calories;
     }
+
+    @Override
+    public String toString() {
+        return "UserMeal: time " + dateTime + ", description: " + description + ", calories: " + calories;
+    }
 }
