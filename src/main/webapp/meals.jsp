@@ -19,6 +19,7 @@
         <th>description</th>
         <th>calories</th>
         <th>Time</th>
+        <th colspan="2"><a href="meals?action=create">Add Meal</a></th>
         </tr>
     <c:forEach var="meal" items="${meals}">
         <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealWithExceed" scope="page"/>
@@ -26,6 +27,8 @@
             <td>${meal.description}</td>
             <td>${meal.calories}</td>
             <td><%= TimeUtil.toString(meal.getDateTime())%></td>
+            <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
+            <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
         </tr>
 
     </c:forEach>
