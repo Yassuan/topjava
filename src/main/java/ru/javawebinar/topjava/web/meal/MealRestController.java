@@ -18,16 +18,12 @@ import java.util.List;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
-@Controller
-public class MealRestController {
+
+public abstract class MealRestController {
     private static final Logger LOG = LoggerFactory.getLogger(MealRestController.class);
-
-    private final MealService service;
-
     @Autowired
-    public MealRestController(MealService service) {
-        this.service = service;
-    }
+    private  MealService service;
+
 
     public Meal get(int id) {
         int userId = AuthorizedUser.id();
