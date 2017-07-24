@@ -11,6 +11,7 @@ import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -117,5 +118,29 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MATCHER.contentListMatcher(ADMIN, USER)));
+    }
+    @Test
+    public void invalidUpdate() throws Exception {
+        User invalidForUpdate = new User(USER);
+        invalidForUpdate.setEmail("");
+
+        mockMvc.perform(put(REST_URL + USER_ID)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .with(userHttpBasic(ADMIN))
+                .content(JsonUtil.writeValue(invalidForUpdate)))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print());
+
+    }
+    @Test
+    public void invalidCreateWithLocation() throws Exception{
+        User invalidForCreate = new User(USER_ID + 20, "Invalid", "invalid@gmail.com", "Invalid", 5, Role.ROLE_USER);
+
+        mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .with(userHttpBasic(ADMIN))
+                .content(JsonUtil.writeValue(invalidForCreate)))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print());
     }
 }

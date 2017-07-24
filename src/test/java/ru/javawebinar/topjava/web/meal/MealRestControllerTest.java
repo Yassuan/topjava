@@ -11,6 +11,7 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
@@ -131,4 +132,29 @@ public class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(MATCHER_WITH_EXCEED.contentListMatcher(
                         MealsUtil.getWithExceeded(Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1), USER.getCaloriesPerDay())));
     }
+
+    @Test
+    public void invalidCreateWithLocation() throws Exception {
+        Meal meal = new Meal(null, LocalDateTime.now(),null,2000000);
+
+        mockMvc.perform(post(REST_URL)
+               .contentType(MediaType.APPLICATION_JSON)
+               .content(JsonUtil.writeValue(meal))
+               .with(userHttpBasic(USER)))
+               .andDo(print())
+               .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    public void invalidUpdate() throws Exception {
+        Meal invalidMeal = new Meal(MEAL1_ID,null,"invalid",2 );
+
+        mockMvc.perform(put(REST_URL + MEAL1_ID)
+               .with(userHttpBasic(USER))
+               .contentType(MediaType.APPLICATION_JSON)
+               .content(JsonUtil.writeValue(invalidMeal)))
+               .andDo(print())
+               .andExpect(status().isUnprocessableEntity());
+    }
+
 }
