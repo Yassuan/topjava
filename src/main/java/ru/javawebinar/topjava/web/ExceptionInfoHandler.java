@@ -6,6 +6,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.util.ValidationUtil;
@@ -33,6 +34,14 @@ public class ExceptionInfoHandler {
     public ErrorInfo handleError(HttpServletRequest request, MethodArgumentNotValidException e) {
         return logAndGetErrorInfo(request, e, true);
     }
+
+    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(BindException.class)
+    @ResponseBody
+    public ErrorInfo handleError(HttpServletRequest request, BindException e ) {
+        return logAndGetErrorInfo(request, e ,true);
+    }
+
 
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)

@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.support.SessionStatus;
@@ -23,6 +24,7 @@ public class RootController extends AbstractUserController {
     public RootController(UserService service) {
         super(service);
     }
+
 
     @GetMapping("/")
     public String root() {
@@ -53,14 +55,25 @@ public class RootController extends AbstractUserController {
 
     @PostMapping("/profile")
     public String updateProfile(@Valid UserTo userTo, BindingResult result, SessionStatus status) {
-        if (result.hasErrors()) {
+        if(!result.hasErrors()) {
+            try {
+                super.update(userTo, AuthorizedUser.id());
+                AuthorizedUser.get().update(userTo);
+                status.setComplete();
+
+            } catch (Exception e) {
+                result.rejectValue("email", "common.existenceEmail");
+            }
+        }
+        return "profile";
+       /* if (result.hasErrors()) {
             return "profile";
         } else {
             super.update(userTo, AuthorizedUser.id());
             AuthorizedUser.get().update(userTo);
             status.setComplete();
             return "redirect:meals";
-        }
+        }*/
     }
 
     @GetMapping("/register")
@@ -72,7 +85,20 @@ public class RootController extends AbstractUserController {
 
     @PostMapping("/register")
     public String saveRegister(@Valid UserTo userTo, BindingResult result, SessionStatus status, ModelMap model) {
-        if (result.hasErrors()) {
+        if(!result.hasErrors()) {
+            try {
+                super.create(UserUtil.createNewFromTo(userTo));
+                status.setComplete();
+                return "redirect:login?message=app.registered&username=" + userTo.getEmail();
+            } catch (Exception e) {
+                result.rejectValue("email", "common.existenceEmail");
+
+            }
+        }
+        model.addAttribute("register", true);
+        return "profile";
+    }
+        /*   if (result.hasErrors()) {
             model.addAttribute("register", true);
             return "profile";
         } else {
@@ -80,5 +106,5 @@ public class RootController extends AbstractUserController {
             status.setComplete();
             return "redirect:login?message=app.registered&username=" + userTo.getEmail();
         }
-    }
+    }*/
 }
